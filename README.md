@@ -204,14 +204,3 @@ npm run dev
 
 Contributions are welcome! Feel free to fork the repo and submit a pull request.
 
----
-
-## 📌 Author
-
-**Sakshi Chikhale**
-
----
-
-## ⭐ Acknowledgment
-
-Built as a project to explore real-world inventory management and full-stack development with a focus on AI integration.
