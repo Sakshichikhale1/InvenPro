@@ -1,0 +1,25 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: invenpro-backend
+    env: docker
+    dockerContext: backend
+    dockerfilePath: Dockerfile
+    region: ohio
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8000
+
+  # Frontend React (Vite)
+  - type: web
+    name: invenpro-frontend
+    env: static
+    region: ohio
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://invenpro-backend.onrender.com # Change this if your backend name is different

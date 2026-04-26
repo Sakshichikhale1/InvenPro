@@ -97,7 +97,8 @@ const BarcodeScanner = ({ onScan }) => {
   const sendToBackend = async (detectedBarcode) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/product-by-barcode', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      const response = await fetch(`${apiUrl}/product-by-barcode`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
