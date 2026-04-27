@@ -5,6 +5,8 @@ import { Button } from './ui/button';
 import { Barcode, Camera, RefreshCcw, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { DecodeHintType } from '@zxing/library';
+
 const BarcodeScanner = ({ onScan }) => {
   const [barcode, setBarcode] = useState('');
   const [error, setError] = useState('');
@@ -15,7 +17,7 @@ const BarcodeScanner = ({ onScan }) => {
 
   useEffect(() => {
     const hints = new Map();
-    hints.set(2, true); // DecodeHintType.TRY_HARDER
+    hints.set(DecodeHintType.TRY_HARDER, true);
     codeReaderRef.current = new BrowserMultiFormatReader(hints);
     startScanning();
 
@@ -51,10 +53,7 @@ const BarcodeScanner = ({ onScan }) => {
         }
       };
 
-      // Set hints for better detection (optional but helpful)
-      const hints = new Map();
-      hints.set(2, true); // TRY_HARDER
-      hints.set(3, true); // ASSUME_CODE_39_CHECK_DIGIT (example, but multi-reader handles many)
+      // The reader is already initialized with TRY_HARDER hint in useEffect
       
       await codeReaderRef.current.decodeFromConstraints(
         constraints,
@@ -83,14 +82,15 @@ const BarcodeScanner = ({ onScan }) => {
 
   const stopScanning = () => {
     if (codeReaderRef.current) {
-      // The zxing library's stop logic can be tricky, this is a clean way to reset
       const stream = videoRef.current?.srcObject;
       if (stream) {
         const tracks = stream.getTracks();
         tracks.forEach(track => track.stop());
       }
-      // Re-initialize the reader for potential restart
-      codeReaderRef.current = new BrowserMultiFormatReader();
+      // Re-initialize with hints to ensure consistent behavior on restart
+      const hints = new Map();
+      hints.set(DecodeHintType.TRY_HARDER, true);
+      codeReaderRef.current = new BrowserMultiFormatReader(hints);
     }
   };
 

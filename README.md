@@ -1,4 +1,6 @@
 # 🚀 InvenPro – Smart Stock Keeper
+https://invenpro-ui.onrender.com
+
 
 InvenPro is a state-of-the-art smart inventory management system designed to help businesses and individuals efficiently track, manage, and analyze stock in real time. By leveraging advanced AI technologies, InvenPro transforms traditional inventory tracking into a predictive and automated experience.
 
@@ -187,7 +189,7 @@ npm run dev
 
 ## 📸 Screenshots
 
-*Add screenshots of your UI here to showcase features*
+<img width="1885" height="902" alt="image" src="https://github.com/user-attachments/assets/14174f9e-a2f0-4205-8706-f08d3fceaf23" />
 
 ---
 
