@@ -6,7 +6,13 @@ import { Product } from '@/types/inventory';
 import { formatINR } from '@/lib/currency';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -207,6 +213,9 @@ export default function Products() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-lg">{editId ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+            <DialogDescription>
+              {editId ? 'Update the details of your existing product.' : 'Fill in the information below to add a new product to your inventory.'}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid grid-cols-2 gap-4">
@@ -242,6 +251,10 @@ export default function Products() {
 
       <Dialog open={scanDialogOpen} onOpenChange={setScanDialogOpen}>
         <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-none bg-transparent shadow-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Barcode Scanner</DialogTitle>
+            <DialogDescription>Scan a product barcode using your camera</DialogDescription>
+          </DialogHeader>
           <BarcodeScanner onScan={handleScan} />
         </DialogContent>
       </Dialog>

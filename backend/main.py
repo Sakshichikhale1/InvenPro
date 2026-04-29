@@ -14,33 +14,54 @@ if sys.platform == 'win32':
     except Exception as e:
         print(f"Warning: Could not add pyzbar DLL directory: {e}")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from api.barcode import router as barcode_router
 from api.products import router as products_router
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+def verify_token(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = authorization.split(" ")[1]
+    if token != "invenpro-token":
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return token
+
 app = FastAPI(title="Smart Inventory System API")
 
-# Configure CORS
-origins = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+from fastapi import Request
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"📡 CONNECTION ATTEMPT: {request.method} {request.url}")
+    print(f"👉 FROM ORIGIN: {request.headers.get('origin')}")
+    response = await call_next(request)
+    return response
+
+# Configure CORS - Permissive for development
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False, # Must be False when using allow_origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-
+# Include routers - Made public for development troubleshooting
 app.include_router(barcode_router, prefix="/cv", tags=["Computer Vision"])
 app.include_router(products_router, tags=["Products"])
+
+@app.post("/login")
+def login(req: LoginRequest):
+    print(f"DEBUG: Login attempt - username: '{req.username}', password: '{req.password}'")
+    if req.username == "admin" and (req.password == "admin123" or req.password == "admin"):
+        return {"token": "invenpro-token"}
+    raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @app.get("/")
 def home():

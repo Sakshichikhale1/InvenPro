@@ -6,7 +6,7 @@ import { Customer } from '@/types/inventory';
 import { formatINR } from '@/lib/currency';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -122,7 +122,12 @@ export default function Customers() {
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">
-          <DialogHeader><DialogTitle>{editId ? 'Edit Customer' : 'Add Customer'}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{editId ? 'Edit Customer' : 'Add Customer'}</DialogTitle>
+            <DialogDescription>
+              {editId ? 'Update the details for this customer.' : 'Enter the customer details to add them to your database.'}
+            </DialogDescription>
+          </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5"><Label className="text-xs font-medium">Company Name</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>

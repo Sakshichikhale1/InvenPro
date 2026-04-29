@@ -1,5 +1,6 @@
-import { LayoutDashboard, Package, ShoppingCart, History, BarChart3, Bell, Clock, Sparkles, Truck, Users } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, History, BarChart3, Bell, Clock, Sparkles, Truck, Users, LogOut } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
+import { useNavigate } from 'react-router-dom';
 import { useInventory } from '@/context/InventoryContext';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -30,6 +31,12 @@ export function AppSidebar() {
   const collapsed = state === 'collapsed';
   const { alerts } = useInventory();
   const activeAlerts = alerts.filter(a => !a.dismissed).length;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   const renderNav = (items: typeof mainNav) => (
     <SidebarMenu>
@@ -86,6 +93,19 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-sidebar-foreground/40 text-[9px] uppercase tracking-[0.15em] font-semibold">{!collapsed && 'Insights'}</SidebarGroupLabel>
           <SidebarGroupContent>{renderNav(insightsNav)}</SidebarGroupContent>
         </SidebarGroup>
+
+        <div className="mt-auto pb-4">
+          <SidebarGroup>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLogout} className="text-red-500 hover:bg-red-500/10 hover:text-red-600 transition-all duration-200 rounded-xl">
+                  <LogOut className="h-4 w-4 mr-2.5 shrink-0" />
+                  {!collapsed && <span className="text-[13px] font-medium">Logout</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        </div>
       </SidebarContent>
     </Sidebar>
   );

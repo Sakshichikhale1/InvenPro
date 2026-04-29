@@ -5,3 +5,5 @@ opencv-python
 numpy
 pyzbar
 httpx
+zxing-cpp
+ddgs
