@@ -5,10 +5,12 @@ import { Bell, Moon, Sun } from 'lucide-react';
 import { useInventory } from '@/context/InventoryContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { alerts } = useInventory();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const activeAlerts = alerts.filter(a => !a.dismissed).length;
 
   return (
@@ -22,14 +24,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl" onClick={toggleTheme}>
                 {theme === 'light' ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
               </Button>
-              {activeAlerts > 0 && (
-                <div className="relative">
-                  <Bell className="h-4.5 w-4.5 text-muted-foreground" />
-                  <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-destructive text-destructive-foreground text-[8px] flex items-center justify-center font-bold animate-pulse">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl relative" onClick={() => navigate('/alerts')}>
+                <Bell className="h-4.5 w-4.5 text-muted-foreground" />
+                {activeAlerts > 0 && (
+                  <span className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-destructive text-destructive-foreground text-[8px] flex items-center justify-center font-bold animate-pulse">
                     {activeAlerts}
                   </span>
-                </div>
-              )}
+                )}
+              </Button>
               <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-[hsl(250,75%,60%)] flex items-center justify-center text-primary-foreground text-xs font-bold">
                 A
               </div>

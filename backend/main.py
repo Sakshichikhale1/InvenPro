@@ -20,6 +20,7 @@ from pydantic import BaseModel
 from api.barcode import router as barcode_router
 from api.products import router as products_router
 from api.chat import router as chat_router
+from api.notifications import router as notifications_router
 
 class LoginRequest(BaseModel):
     username: str
@@ -57,6 +58,7 @@ app.add_middleware(
 app.include_router(barcode_router, prefix="/cv", tags=["Computer Vision"])
 app.include_router(products_router, tags=["Products"])
 app.include_router(chat_router, prefix="/chat", tags=["Chat"])
+app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 
 @app.post("/login")
 def login(req: LoginRequest):

@@ -29,6 +29,13 @@ export default function Orders() {
     const p = products.find(x => x.id === selectedProduct);
     if (!p) return;
     if (items.find(i => i.productId === p.id)) { toast.error('Product already added'); return; }
+    
+    // Validate stock for sales order
+    if (orderType === 'sales' && qty > p.quantity) {
+      toast.error(`Not enough stock for ${p.name}. Only ${p.quantity} available.`);
+      return;
+    }
+    
     setItems([...items, {
       productId: p.id, productName: p.name, quantity: qty,
       unitPrice: orderType === 'purchase' ? p.costPrice : p.price,
@@ -41,15 +48,44 @@ export default function Orders() {
   const gst = calcGST(items, isInterState);
 
   const submitOrder = () => {
-    if (items.length === 0) { toast.error('Add at least one product'); return; }
+    let finalItems = items;
+    
+    // Auto-add the selected product if they forgot to click '+' and the list is empty
+    if (items.length === 0 && selectedProduct) {
+      const p = products.find(x => x.id === selectedProduct);
+      if (p) {
+        finalItems = [{
+          productId: p.id, productName: p.name, quantity: qty,
+          unitPrice: orderType === 'purchase' ? p.costPrice : p.price,
+          costPrice: p.costPrice, gstRate: p.gstRate, hsnCode: p.hsnCode,
+        }];
+      }
+    }
+
+    if (finalItems.length === 0) { toast.error('Add at least one product'); return; }
+    
+    // Validate stock for all items before submitting sales order
+    if (orderType === 'sales') {
+      for (const item of finalItems) {
+        const p = products.find(x => x.id === item.productId);
+        if (p && item.quantity > p.quantity) {
+          toast.error(`Not enough stock for ${p.name}. Only ${p.quantity} available.`);
+          return;
+        }
+      }
+    }
+    
     const customer = customers.find(c => c.id === selectedCustomer);
     const supplier = suppliers.find(s => s.id === selectedSupplier);
+    const finalGst = calcGST(finalItems, isInterState);
+    
     createOrder({
-      type: orderType, status: 'pending', items, notes, isInterState, gstBreakdown: gst,
+      type: orderType, status: 'pending', items: finalItems, notes, isInterState, gstBreakdown: finalGst,
       customerId: customer?.id, customerName: customer?.name,
       supplierId: supplier?.id, supplierName: supplier?.name,
     });
-    setItems([]); setNotes(''); setSelectedCustomer(''); setSelectedSupplier('');
+    
+    setItems([]); setNotes(''); setSelectedCustomer(''); setSelectedSupplier(''); setSelectedProduct(''); setQty(1);
     toast.success('Order created successfully! 🎉');
   };
 
@@ -198,7 +234,7 @@ export default function Orders() {
                 {formatINR(gst.totalWithTax)}
               </motion.div>
             </div>
-            <Button onClick={submitOrder} disabled={items.length === 0} className="gap-2 h-10 px-6 shadow-sm hover:shadow-md transition-shadow">
+            <Button onClick={submitOrder} disabled={items.length === 0 && !selectedProduct} className="gap-2 h-10 px-6 shadow-sm hover:shadow-md transition-shadow">
               Create Order <ArrowRight className="h-4 w-4" />
             </Button>
           </motion.div>

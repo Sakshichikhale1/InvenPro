@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { Product, Order, OrderItem, ActivityLog, Alert, Supplier, Customer, GSTBreakdown } from '@/types/inventory';
+import { toast } from 'sonner';
 
 const SAMPLE_SUPPLIERS: Supplier[] = [
   { id: 's1', name: 'TechParts Inc', gstin: '27AABCT1234F1Z5', contactPerson: 'Rahul Sharma', email: 'rahul@techparts.in', phone: '+91 98765 43210', address: '42 Electronics Hub', city: 'Mumbai', state: 'Maharashtra', createdAt: '2025-01-01' },
@@ -109,7 +110,45 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
         message: p.quantity === 0 ? `${p.name} is out of stock!` : `${p.name} is below reorder level (${p.quantity}/${p.reorderLevel})`,
         currentStock: p.quantity, reorderLevel: p.reorderLevel, timestamp: new Date().toISOString(), dismissed: false,
       }));
-    setAlerts(newAlerts);
+      
+    setAlerts(prevAlerts => {
+      // Create a map of previous alerts by productId for easy comparison
+      const prevAlertsMap = new Map(prevAlerts.map(a => [a.productId, a]));
+      
+      // Filter for truly new alerts or alerts that escalated from low-stock to out-of-stock
+      const newlyTriggeredAlerts = newAlerts.filter(newAlert => {
+        const prevAlert = prevAlertsMap.get(newAlert.productId);
+        if (!prevAlert) return true; // Completely new alert
+        if (prevAlert.type === 'low-stock' && newAlert.type === 'out-of-stock') return true; // Escalated
+        return false;
+      });
+      
+      if (newlyTriggeredAlerts.length > 0) {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+        const criticalAlert = newlyTriggeredAlerts.find(a => a.type === 'out-of-stock') || newlyTriggeredAlerts[0];
+        
+        toast.info(`Triggering background SMS for: ${criticalAlert.productName}`);
+        
+        fetch(`${apiUrl}/notifications/send-sms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `InvenPro Alert: ${criticalAlert.message}` })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.delivered) {
+                toast.success('📱 Live SMS Alert sent to your phone!');
+            } else if (!data.delivered) {
+                toast.warning(`SMS Backend Logged: ${data.message}`);
+            }
+        })
+        .catch(err => {
+            console.error("Failed to trigger SMS:", err);
+            toast.error('Failed to connect to backend SMS service');
+        });
+      }
+      return newAlerts;
+    });
   }, [products]);
 
   useEffect(() => { generateAlerts(); }, [products, generateAlerts]);

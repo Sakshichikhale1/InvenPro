@@ -9,3 +9,4 @@ zxing-cpp
 ddgs
 openai
 python-dotenv
+twilio
