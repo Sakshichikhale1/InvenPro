@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { InventoryProvider } from "@/context/InventoryContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AppLayout } from "@/components/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -28,26 +29,27 @@ const App = () => (
       <ThemeProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <InventoryProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              
-              <Route path="/*" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/history" element={<OrderHistory />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/alerts" element={<Alerts />} />
-                      <Route path="/activity" element={<ActivityLog />} />
-                      <Route path="/assistant" element={<AIAssistant />} />
-                      <Route path="/suppliers" element={<Suppliers />} />
-                      <Route path="/customers" element={<Customers />} />
-                      <Route path="*" element={<NotFound />} />
+        <NotificationProvider>
+          <BrowserRouter>
+            <InventoryProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                
+                <Route path="/*" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/history" element={<OrderHistory />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/alerts" element={<Alerts />} />
+                        <Route path="/activity" element={<ActivityLog />} />
+                        <Route path="/assistant" element={<AIAssistant />} />
+                        <Route path="/suppliers" element={<Suppliers />} />
+                        <Route path="/customers" element={<Customers />} />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AppLayout>
                 </ProtectedRoute>
@@ -55,6 +57,7 @@ const App = () => (
             </Routes>
           </InventoryProvider>
         </BrowserRouter>
+        </NotificationProvider>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>

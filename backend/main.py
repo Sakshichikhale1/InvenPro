@@ -44,11 +44,11 @@ async def log_requests(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Configure CORS - Permissive for development
+# Configure CORS - Allow all origins (token-based auth, no cookies needed)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False, # Must be False when using allow_origins=["*"]
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

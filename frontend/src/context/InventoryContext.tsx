@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { Product, Order, OrderItem, ActivityLog, Alert, Supplier, Customer, GSTBreakdown } from '@/types/inventory';
+import { useNotification } from './NotificationContext';
 
 const SAMPLE_SUPPLIERS: Supplier[] = [
   { id: 's1', name: 'TechParts Inc', gstin: '27AABCT1234F1Z5', contactPerson: 'Rahul Sharma', email: 'rahul@techparts.in', phone: '+91 98765 43210', address: '42 Electronics Hub', city: 'Mumbai', state: 'Maharashtra', createdAt: '2025-01-01' },
@@ -84,6 +85,7 @@ const genId = () => Math.random().toString(36).substr(2, 9);
 const now = () => new Date().toISOString().split('T')[0];
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
+  const { sendSystemNotification } = useNotification();
   const [products, setProducts] = useState<Product[]>(SAMPLE_PRODUCTS);
   const [orders, setOrders] = useState<Order[]>(SAMPLE_ORDERS);
   const [suppliers, setSuppliers] = useState<Supplier[]>(SAMPLE_SUPPLIERS);
@@ -95,6 +97,7 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     { id: '4', action: 'Low Stock Alert', details: 'Monitor Stand below reorder level', timestamp: '2025-04-13T08:00:00', type: 'alert' },
   ]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [notifiedProductIds, setNotifiedProductIds] = useState<Set<string>>(new Set());
 
   const addLog = useCallback((action: string, details: string, type: ActivityLog['type']) => {
     setLogs(prev => [{ id: genId(), action, details, timestamp: new Date().toISOString(), type }, ...prev]);
@@ -113,6 +116,29 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
   }, [products]);
 
   useEffect(() => { generateAlerts(); }, [products, generateAlerts]);
+
+  // Show system notifications for new alerts
+  useEffect(() => {
+    alerts.forEach(alert => {
+      if (!notifiedProductIds.has(alert.productId) && !alert.dismissed) {
+        if (alert.type === 'out-of-stock') {
+          sendSystemNotification(`🚨 OUT OF STOCK: ${alert.productName}`, {
+            body: `Current stock: ${alert.currentStock} units\nPlease reorder immediately!`,
+            tag: `stock-alert-${alert.productId}`,
+            requireInteraction: true,
+          });
+        } else {
+          sendSystemNotification(`⚠️ LOW STOCK: ${alert.productName}`, {
+            body: `Current: ${alert.currentStock} units | Reorder level: ${alert.reorderLevel}`,
+            tag: `stock-alert-${alert.productId}`,
+          });
+        }
+      }
+    });
+    
+    // Update notified product IDs
+    setNotifiedProductIds(new Set(alerts.map(a => a.productId)));
+  }, [alerts, notifiedProductIds, sendSystemNotification]);
 
   const addProduct = useCallback((p: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
     const product = { ...p, id: genId(), createdAt: now(), updatedAt: now() };
