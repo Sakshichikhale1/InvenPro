@@ -7,3 +7,5 @@ pyzbar
 httpx
 zxing-cpp
 ddgs
+openai
+python-dotenv

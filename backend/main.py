@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from api.barcode import router as barcode_router
 from api.products import router as products_router
+from api.chat import router as chat_router
 
 class LoginRequest(BaseModel):
     username: str
@@ -55,6 +56,7 @@ app.add_middleware(
 # Include routers - Made public for development troubleshooting
 app.include_router(barcode_router, prefix="/cv", tags=["Computer Vision"])
 app.include_router(products_router, tags=["Products"])
+app.include_router(chat_router, prefix="/chat", tags=["Chat"])
 
 @app.post("/login")
 def login(req: LoginRequest):
