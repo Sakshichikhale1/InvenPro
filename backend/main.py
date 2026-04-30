@@ -45,13 +45,21 @@ async def log_requests(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Configure CORS - Permissive for development
+# Configure CORS
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://invenpro-ui.onrender.com",
+    "https://smart-stock-keeper-main.onrender.com", # In case this is an alternate UI URL
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False, # Must be False when using allow_origins=["*"]
+    allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include routers - Made public for development troubleshooting
