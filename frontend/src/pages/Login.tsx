@@ -17,7 +17,20 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      // Get API URL from environment or construct from current host
+      let apiUrl = import.meta.env.VITE_API_URL;
+      
+      if (!apiUrl) {
+        // Auto-detect: if we're on a remote URL (like ngrok), replace port
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          // We're on a forwarded URL, try the same host with backend port
+          apiUrl = `${window.location.protocol}//${window.location.hostname}:8000`;
+        } else {
+          // Local development
+          apiUrl = 'http://127.0.0.1:8000';
+        }
+      }
+
       const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
