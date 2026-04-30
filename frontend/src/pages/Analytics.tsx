@@ -27,18 +27,30 @@ export default function Analytics() {
     return { id: o.id, revenue, profit: revenue - cost, margin: revenue > 0 ? ((revenue - cost) / revenue * 100) : 0 };
   });
 
-  // Pareto analysis - top 20% products
-  const productRevenue = salesOrders.flatMap(o => o.items).reduce((acc, i) => {
-    acc[i.productName] = (acc[i.productName] || 0) + i.unitPrice * i.quantity;
+  // Trend Analysis - Revenue and Profit over time
+  const trendDataMap = salesOrders.reduce((acc, order) => {
+    const dateObj = new Date(order.createdAt);
+    const dateKey = dateObj.toISOString().split('T')[0];
+    const revenue = order.gstBreakdown.taxableAmount;
+    const cost = order.items.reduce((s, i) => s + i.costPrice * i.quantity, 0);
+    const profit = revenue - cost;
+    
+    if (acc[dateKey]) {
+      acc[dateKey].revenue += revenue;
+      acc[dateKey].profit += profit;
+    } else {
+      acc[dateKey] = { revenue, profit, dateObj };
+    }
     return acc;
-  }, {} as Record<string, number>);
-  const sortedProducts = Object.entries(productRevenue).sort(([, a], [, b]) => b - a);
-  const totalProductRevenue = sortedProducts.reduce((s, [, v]) => s + v, 0);
-  let cumulative = 0;
-  const paretoData = sortedProducts.map(([name, revenue]) => {
-    cumulative += revenue;
-    return { name: name.length > 10 ? name.slice(0, 10) + '…' : name, revenue, cumPct: Math.round(cumulative / totalProductRevenue * 100) };
-  });
+  }, {} as Record<string, { revenue: number, profit: number, dateObj: Date }>);
+
+  const trendData = Object.entries(trendDataMap)
+    .sort(([, a], [, b]) => a.dateObj.getTime() - b.dateObj.getTime())
+    .map(([date, data]) => ({
+      date: data.dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      revenue: data.revenue,
+      profit: data.profit
+    }));
 
   // Aging inventory
   const today = new Date();
@@ -94,25 +106,34 @@ export default function Analytics() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Pareto Analysis */}
+        {/* Trend Analysis */}
         <motion.div className="stat-card" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-base font-bold">Pareto (80/20 Rule)</h3>
-              <p className="text-xs text-muted-foreground">Revenue contribution by product</p>
+              <h3 className="text-base font-bold">Trend Analysis</h3>
+              <p className="text-xs text-muted-foreground">Revenue and profit over time</p>
             </div>
-            <Target className="h-5 w-5 text-primary" />
+            <TrendingUp className="h-5 w-5 text-primary" />
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={paretoData}>
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted)/0.3)" />
-              <XAxis dataKey="name" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="revenue" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="pct" orientation="right" domain={[0, 100]} tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={tooltipStyle} />
-              <Bar yAxisId="revenue" dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={24} />
-              <Line yAxisId="pct" dataKey="cumPct" stroke="hsl(var(--destructive))" strokeWidth={3} dot={{ r: 4, fill: 'hsl(var(--destructive))' }} />
-            </BarChart>
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v}`} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatINR(v)} />
+              <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorRevenue)" name="Revenue" />
+              <Area type="monotone" dataKey="profit" stroke="hsl(var(--success))" fillOpacity={1} fill="url(#colorProfit)" name="Profit" />
+            </AreaChart>
           </ResponsiveContainer>
         </motion.div>
 
