@@ -9,3 +9,6 @@ node_modules/
 dist/
 .DS_Store
 .vscode/
+
+# Local-only SMS service
+backend/api/notifications.py

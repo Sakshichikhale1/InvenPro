@@ -24,5 +24,8 @@ def health():
     return {"status": "ok"}
 
 # Re-adding the notification router to test it in isolation
-from api.notifications import router as notifications_router
-app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+try:
+    from api.notifications import router as notifications_router
+    app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+except ImportError:
+    print("SMS Notifications service not found. Skipping...")

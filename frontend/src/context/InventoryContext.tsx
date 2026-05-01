@@ -143,8 +143,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
             }
         })
         .catch(err => {
-            console.error("Failed to trigger SMS:", err);
-            toast.error('Failed to connect to backend SMS service');
+            console.warn("SMS service not available or failed:", err);
+            // We don't show an error toast here anymore to keep it silent if the service is removed from GitHub
         });
       }
       return newAlerts;
