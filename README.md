@@ -23,14 +23,13 @@ InvenPro integrates cutting-edge AI to provide more than just tracking. Here’s
 *   **👁️ Computer Vision (CV)**: 
     *   **Live Barcode Scanning**: Uses the camera to scan and identify products instantly.
     *   **Visual Product Recognition**: Detects items and updates stock counts through image analysis.
-*   **🗣️ Natural Language Processing (NLP)**:
-    *   **Semantic Search**: Find products using natural language descriptions (e.g., "show me all blue electronics").
-    *   **Voice Commands**: Manage inventory hands-free using voice-to-text integration.
+*   **🗣️ Natural Language Processing (NLP) & LLM**:
+    *   **Conversational Intelligence**: Powered by OpenAI and LangChain to understand complex user intent and context.
+    *   **InvenBot Assistant**: A GPT-powered chatbot that can "reason" over your stock data to answer questions like *"Which supplier should I order from for the best price on monitors?"*
+    *   **Automated Action Extraction**: Automatically converts natural speech/text into database commands (e.g., "Add 50 units of XYZ") without manual form filling.
 *   **📈 Machine Learning (ML) & Prediction Models**:
     *   **Demand Forecasting**: Predicts future sales trends based on historical data.
     *   **Stockout Prevention**: AI models forecast when an item will go out of stock and suggest reorder dates.
-*   **🤖 AI Assistant & Chatbot**:
-    *   **InvenBot**: An intelligent 24/7 assistant to help you query stock levels, generate reports, and get instant inventory insights via a conversational interface.
 *   **🎯 Recommendation System**:
     *   **Smart Reordering**: Suggests optimal restock quantities to minimize storage costs while maximizing availability.
     *   **Trend Identification**: Recommends items that are trending or identifies slow-moving stock for clearance.
