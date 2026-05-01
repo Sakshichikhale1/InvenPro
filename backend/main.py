@@ -36,6 +36,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,4 +51,8 @@ app.include_router(notifications_router, prefix="/notifications", tags=["Notific
 
 @app.get("/")
 def home():
-    return {"message": "Backend is running"}
+    return {
+        "message": "Smart Inventory System API is running",
+        "version": "1.0.1-cors-fix",
+        "status": "healthy"
+    }
