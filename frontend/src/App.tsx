@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { InventoryProvider } from "@/context/InventoryContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AppLayout } from "@/components/AppLayout";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
@@ -18,7 +17,6 @@ import AIAssistant from "./pages/AIAssistant";
 import Suppliers from "./pages/Suppliers";
 import Customers from "./pages/Customers";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -31,26 +29,22 @@ const App = () => (
         <BrowserRouter>
           <InventoryProvider>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              
               <Route path="/*" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/history" element={<OrderHistory />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/alerts" element={<Alerts />} />
-                      <Route path="/activity" element={<ActivityLog />} />
-                      <Route path="/assistant" element={<AIAssistant />} />
-                      <Route path="/suppliers" element={<Suppliers />} />
-                      <Route path="/customers" element={<Customers />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/history" element={<OrderHistory />} />
+                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/alerts" element={<Alerts />} />
+                    <Route path="/activity" element={<ActivityLog />} />
+                    <Route path="/assistant" element={<AIAssistant />} />
+                    <Route path="/suppliers" element={<Suppliers />} />
+                    <Route path="/customers" element={<Customers />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AppLayout>
               } />
             </Routes>
           </InventoryProvider>

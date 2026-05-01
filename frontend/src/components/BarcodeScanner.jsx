@@ -177,12 +177,10 @@ const BarcodeScanner = ({ onScan }) => {
     setIsLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
       const response = await fetch(`${apiUrl}/product-by-barcode`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ barcode: detectedBarcode }),
       });
@@ -240,14 +238,9 @@ const BarcodeScanner = ({ onScan }) => {
             formData.append('file', file);
             
             const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-            const token = localStorage.getItem('token');
-            
             try {
               const res = await fetch(`${apiUrl}/cv/scan-barcode`, {
                 method: 'POST',
-                headers: {
-                  ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                },
                 body: formData
               });
 
@@ -308,14 +301,9 @@ const BarcodeScanner = ({ onScan }) => {
         formData.append('file', blob, 'capture.jpg');
         
         const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-        const token = localStorage.getItem('token');
-        
         try {
           const res = await fetch(`${apiUrl}/cv/scan-barcode`, {
             method: 'POST',
-            headers: {
-              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-            },
             body: formData
           });
 

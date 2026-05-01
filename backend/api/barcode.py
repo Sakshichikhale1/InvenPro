@@ -3,36 +3,48 @@ from services.cv.barcode_scanner import scan_barcode_from_image
 
 router = APIRouter()
 
+
 @router.post("/scan-barcode")
 async def scan_barcode(file: UploadFile = File(...)):
     """
-    Endpoint to receive an image file and return detected barcode.
+    Receives an image file and returns the detected barcode value.
+    The 'barcode' field can be used to fill a name/identifier field
+    in your database or form.
     """
-    if not file.content_type.startswith("image/"):
+    if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File provided is not an image.")
 
     try:
-        # Read file contents
         contents = await file.read()
-        
-        # Scan barcode
+
+        if not contents:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
         barcode_value = scan_barcode_from_image(contents)
-        
+
         if barcode_value:
             return {
                 "success": True,
-                "barcode": barcode_value
+                "barcode": barcode_value,
+                # Use this field to populate your form / DB name column directly
+                "product_name": barcode_value,
             }
         else:
             return {
                 "success": False,
-                "message": "No barcode detected"
+                "barcode": None,
+                "product_name": None,
+                "message": "No barcode detected. Try a clearer or closer image.",
             }
-            
+
+    except HTTPException:
+        raise
     except Exception as e:
         return {
             "success": False,
-            "message": f"Error processing image: {str(e)}"
+            "barcode": None,
+            "product_name": None,
+            "message": f"Error processing image: {str(e)}",
         }
     finally:
         await file.close()
