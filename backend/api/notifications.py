@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 import os
 from twilio.rest import Client
@@ -14,7 +14,12 @@ class SMSRequest(BaseModel):
     to_number: str = None # Optional, will fallback to env var
 
 @router.post("/send-sms")
-async def send_sms(request: SMSRequest):
+async def send_sms(request: SMSRequest, response: Response):
+    # Manually add CORS headers for maximum compatibility
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    
     account_sid = os.getenv("TWILIO_ACCOUNT_SID")
     auth_token = os.getenv("TWILIO_AUTH_TOKEN")
     from_number = os.getenv("TWILIO_FROM_NUMBER")
