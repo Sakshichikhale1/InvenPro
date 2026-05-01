@@ -24,24 +24,36 @@ from api.notifications import router as notifications_router
 
 app = FastAPI(title="Smart Inventory System API")
 
-# Configure CORS - Outermost layer to handle preflight requests
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://invenpro-ui.onrender.com",
-    "https://invenpro-frontend.onrender.com",
-    "https://smart-stock-keeper-main.onrender.com",
-]
+# Configure CORS - Aggressive settings for Render
+origins = ["*"] # Broadest possible for troubleshooting
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.onrender\.com",
-    allow_credentials=True,
+    allow_credentials=False, # Credentials must be False if origin is "*"
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# Manual OPTIONS handler as a fallback for preflight requests
+from fastapi import Request, Response
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(request: Request, rest_of_path: str):
+    response = Response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, DELETE, PUT"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+# Diagnostic endpoint to verify live code version
+@app.get("/debug-cors")
+async def debug_cors(request: Request):
+    return {
+        "origin_header": request.headers.get("origin"),
+        "host": request.headers.get("host"),
+        "version": "1.0.2-manual-cors"
+    }
 
 # Include routers - Made public for development troubleshooting
 app.include_router(barcode_router, prefix="/cv", tags=["Computer Vision"])
@@ -53,6 +65,6 @@ app.include_router(notifications_router, prefix="/notifications", tags=["Notific
 def home():
     return {
         "message": "Smart Inventory System API is running",
-        "version": "1.0.1-cors-fix",
+        "version": "1.0.2-manual-cors",
         "status": "healthy"
     }
