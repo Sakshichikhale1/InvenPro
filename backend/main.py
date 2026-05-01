@@ -24,20 +24,12 @@ from api.notifications import router as notifications_router
 
 app = FastAPI(title="Smart Inventory System API")
 
-from fastapi import Request
-
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    print(f"CONNECTION ATTEMPT: {request.method} {request.url}")
-    print(f"FROM ORIGIN: {request.headers.get('origin')}")
-    response = await call_next(request)
-    return response
-
-# Configure CORS
+# Configure CORS - Outermost layer to handle preflight requests
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://invenpro-ui.onrender.com",
+    "https://invenpro-frontend.onrender.com",
     "https://smart-stock-keeper-main.onrender.com",
 ]
 
