@@ -130,7 +130,7 @@ InvenPro is designed to transform inventory management by delivering tangible be
 *   **FastAPI**: High-performance Python framework.
 *   **Uvicorn**: ASGI server for lightning-fast responses.
 *   **Scikit-Learn / TensorFlow**: Powering our ML and Prediction models.
-*   **OpenAI / LangChain**: Driving the NLP-based Chatbot and AI Assistant.
+*   **Groq / Llama 3.3**: Driving the high-speed NLP-based Chatbot and AI Assistant.
 
 ---
 
