@@ -24,8 +24,8 @@ InvenPro integrates cutting-edge AI to provide more than just tracking. Here’s
     *   **Live Barcode Scanning**: Uses the camera to scan and identify products instantly.
     *   **Visual Product Recognition**: Detects items and updates stock counts through image analysis.
 *   **🗣️ Natural Language Processing (NLP) & LLM**:
-    *   **Conversational Intelligence**: Powered by OpenAI and LangChain to understand complex user intent and context.
-    *   **InvenBot Assistant**: A GPT-powered chatbot that can "reason" over your stock data to answer questions like *"Which supplier should I order from for the best price on monitors?"*
+    *   **Conversational Intelligence**: Powered by Groq LPU Inference to understand complex user intent and context.
+    *   **InvenBot Assistant**: A Llama 3 powered chatbot that can "reason" over your stock data to answer questions like *"Which supplier should I order from for the best price on monitors?"*
     *   **Automated Action Extraction**: Automatically converts natural speech/text into database commands (e.g., "Add 50 units of XYZ") without manual form filling.
 *   **📈 Machine Learning (ML) & Prediction Models**:
     *   **Demand Forecasting**: Predicts future sales trends based on historical data.
@@ -55,7 +55,7 @@ graph TD
 
 **Step-by-step:**
 1.  **Input**: User enters query (text/voice).
-2.  **Processing**: Text is processed using NLP models (Transformers/LangChain).
+2.  **Processing**: Text is processed using Groq LPU Inference.
 3.  **Extraction**: Intent + entities are extracted (e.g., "Show me low stock electronics").
 4.  **Mapping**: Backend maps intent → specific API logic.
 5.  **Result**: Database queried → filtered response returned to UI.
@@ -80,7 +80,7 @@ graph TD
 
 **How it works:**
 1.  **Message**: User sends a conversational message (e.g., "Add 20 units of Milk").
-2.  **Analysis**: Message sent to LLM (OpenAI/Local LLM) via LangChain.
+2.  **Analysis**: Message sent to LLM (via Groq LPU).
 3.  **Action**: LLM extracts structured data `{ "item": "milk", "quantity": 20 }`.
 4.  **Execution**: Backend executes the corresponding update function.
 5.  **Feedback**: Response returned conversationally: "Got it! Added 20 units of milk to the inventory."
